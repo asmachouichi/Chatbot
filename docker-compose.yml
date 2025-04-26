@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: chatbot_db
+      MYSQL_USER: chatbot_user
+      MYSQL_PASSWORD: chatbot_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - chatbot_net
+
+  chatbot:
+    build: .
+    container_name: chatbot_app
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: chatbot_user
+      DB_PASSWORD: chatbot_pass
+      DB_NAME: chatbot_db
+    ports:
+      - "8501:8501"
+    networks:
+      - chatbot_net
+
+volumes:
+  db_data:
+
+networks:
+  chatbot_net:
